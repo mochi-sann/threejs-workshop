@@ -1,8 +1,14 @@
-import Canvas from './Canvas';
+import Canvas from "./Canvas";
 
 // このクラス内に ページごとのcanvas外の処理を書いていきます
 export default class Page00 {
   constructor() {
-    new Canvas();
+    const canvas = new Canvas();
+    window.addEventListener("mousemove", (e) => {
+      canvas.mouseMoved(e.clientX, e.clientY);
+    });
+    window.addEventListener("scroll", (e) => {
+      canvas.scrolled(window.scrollY);
+    });
   }
-};
+}
