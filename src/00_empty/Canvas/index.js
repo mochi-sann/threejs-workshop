@@ -8,7 +8,11 @@ import { Mesh } from "three/src/objects/Mesh";
 import { Vector2 } from "three";
 
 export default class Canvas {
-  constructor() {
+  constructor(elementId) {
+    this.element = document.getElementById(elementId);
+    const rect = this.element.getBoundingClientRect();
+
+    console.log(rect);
     // マウスの座標
     this.mouse = new Vector2(0, 0);
     // ウィンドウサイズ
@@ -42,15 +46,25 @@ export default class Canvas {
     this.scene.add(this.light);
 
     // 立方体のジオメトリを作成(幅, 高さ, 奥行き)
-    const geo = new BoxGeometry(300, 300, 300);
+    const depth = 300;
+    const geo = new BoxGeometry(rect.width, rect.height, depth);
 
     // マテリアルを作成
     const mat = new MeshLambertMaterial({ color: 0xffffff });
 
     // ジオメトリとマテリアルからメッシュを作成
     this.mesh = new Mesh(geo, mat);
-    this.mesh.rotation.x = Math.PI / 4;
-    this.mesh.rotation.y = Math.PI / 4;
+    this.mesh.position.z = -depth / 2; // 奥行きの半分前に出ているのを下げる
+
+    // this.mesh.rotation.x Math.PI / 4;
+    // this.mesh.rotation.y = Math.PI / 4;
+
+    const center = new Vector2(
+      rect.x + rect.width / 2,
+      rect.y + rect.height / 2
+    );
+    const diff = new Vector2(center.x - this.w / 2, center.y - this.h / 2);
+    this.mesh.position.set(diff.x, -diff.y, -depth / 2);
 
     // メッシュをシーンに追加
     this.scene.add(this.mesh);
@@ -73,11 +87,13 @@ export default class Canvas {
     requestAnimationFrame(() => {
       this.render();
     });
-    const sec = performance.now() / 10;
-    this.mesh.position.y = this.scrollY * 2.5;
 
-    this.mesh.rotation.x = sec * 0.01;
-    this.mesh.rotation.y = sec * 0.01;
+    // const sec = performance.now() / 10;
+    this.mesh.position.y = this.scrollY;
+    //
+    // this.mesh.rotation.x = sec * 0.01;
+    // this.mesh.rotation.y = sec * 0.01;
+
     this.renderer.render(this.scene, this.camera);
   }
 }
